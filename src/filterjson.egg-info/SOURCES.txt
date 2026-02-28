@@ -1,0 +1,16 @@
+README.md
+pyproject.toml
+src/__init__.py
+src/argparse_ext.py
+src/cli.py
+src/core.py
+src/filters.py
+src/table.py
+src/filterjson.egg-info/PKG-INFO
+src/filterjson.egg-info/SOURCES.txt
+src/filterjson.egg-info/dependency_links.txt
+src/filterjson.egg-info/entry_points.txt
+src/filterjson.egg-info/top_level.txt
+tests/test_cli.py
+tests/test_core2.py
+tests/test_table.py

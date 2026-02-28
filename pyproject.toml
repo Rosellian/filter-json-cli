@@ -1,0 +1,21 @@
+[project]
+name = "filterjson"
+version = "0.1.0"
+description = "A modular CLI tool for filtering JSON made with TDD"
+authors = [{ name = "Daniel Rosell" }]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+filterjson = "cli:main"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
