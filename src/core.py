@@ -46,3 +46,13 @@ def filter_data(data: list[dict], data_filter):
         else:
             result = [item for item in result if item.get(key) == value]
     return result
+
+def apply_select(items, fields):
+    if not fields:
+        return items
+    result = []
+    for item in items:
+        filtered = {k: v for k, v in item.items() if k in fields}
+        result.append(filtered)
+
+    return result

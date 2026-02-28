@@ -4,7 +4,7 @@ import json
 import sys
 
 from argparse_ext import build_filters_from_argv
-from core import filter_data
+from core import filter_data, apply_select
 from helptext import HELP_TEXTS
 from table import format_table, set_color_enabled
 
@@ -16,6 +16,11 @@ class Result:
 
 def run(argv):
     args = parse_args(argv)
+
+    selected_fields = None
+    if args.select:
+        selected_fields = [field.strip() for field in args.select.split(",")]
+
     args._argv = argv
 
     if not os.path.exists(args.file):
@@ -31,6 +36,8 @@ def run(argv):
     filtered = filter_data(data, filters)
 
     filtered = invert_items(filtered, data, args.invert)
+    if selected_fields:
+        filtered = apply_select(filtered, selected_fields)
     filtered = sort_items(filtered, args.sort, args.desc)
 
     if args.json:
@@ -81,6 +88,8 @@ def parse_args(argv):
     parser.add_argument("--desc", action="store_true", help="Sorterar i fallande ordning.")
     parser.add_argument("--invert", action="store_true",
                         help="Inverterar hela resultatet efter filtrering.")
+    parser.add_argument("--select",
+                        help="Comma-separated list of fields to include in the output table.")
     parser.add_argument("--json", action="store_true",
                         help="Skriver ut resultatet som rå JSON istället för tabell.")
     parser.add_argument("--max-width", type=int, default=30,
@@ -91,6 +100,7 @@ def parse_args(argv):
                         help="Väljer tabellramar: ascii, unicode, markdown eller none.")
     parser.add_argument("--lang", choices=["sv", "en"], default="sv",
                         help="Språk för hjälptext (sv eller en).")
+
     args = parser.parse_args(argv)
     return args
 

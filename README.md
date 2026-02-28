@@ -111,6 +111,19 @@ Show everything that does not match the filter:
 ```bash
 filterjson --file data.json --key age --min 30 --invert
 ```
+**Select fields**
+
+Select `name` and `age` fields only:
+```bash
+filterjson --file data.json --select name,age
+```
+Combine with filter and sorting:
+```bash
+filterjson --file data.json \
+  --key age --min 20 \
+  --select name,city \
+  --sort name
+```
 **Sorting**
 
 Sort by age:

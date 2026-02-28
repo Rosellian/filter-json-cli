@@ -299,3 +299,21 @@ def test_max_width_flag(tmp_path):
     ])
 
     assert "abcdefghi…" in result.output
+
+def test_select_fields(tmp_path):
+    p = tmp_path / "data.json"
+    p.write_text("""
+    [
+        {"name": "Anna", "age": 30, "city": "Halmstad"},
+        {"name": "Bob", "age": 8, "city": "Göteborg"}
+    ]
+    """)
+
+    result = run([
+        "--file", str(p),
+        "--select", "name,age"
+    ])
+
+    assert "name" in result.output
+    assert "age" in result.output
+    assert "city" not in result.output
