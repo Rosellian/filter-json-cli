@@ -1,3 +1,5 @@
+from encodings.aliases import aliases
+
 from filters import (filter_min, filter_max, filter_equals, filter_not_equals, filter_contains,
                                 filter_not_contains, filter_regex, filter_not_regex)
 
@@ -47,12 +49,18 @@ def filter_data(data: list[dict], data_filter):
             result = [item for item in result if item.get(key) == value]
     return result
 
-def apply_select(items, fields):
+def apply_select(items, fields, aliases=None):
     if not fields:
         return items
+
+    aliases = aliases or {}
     result = []
     for item in items:
-        filtered = {k: v for k, v in item.items() if k in fields}
+        filtered = {}
+        for field in fields:
+            if field in item:
+                alias = aliases.get(field, field)
+                filtered[alias] = item[field]
         result.append(filtered)
 
     return result

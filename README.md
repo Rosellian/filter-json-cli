@@ -26,7 +26,7 @@ It provides a powerful query language, expressive filters, flexible table render
 ### 🔧 Sorting & Output Options
 - `--sort` and `--desc`  
 - `--json` for raw JSON output  
-- `--select` (future extension)  
+- `--select` to choose what columns to include, also if aliases are desired 
 - `--align` per column (future extension)
 
 ### 🌍 Multi‑language Help

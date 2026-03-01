@@ -60,6 +60,13 @@ TABELLFORMAT:
   --max-width N
       Maxbredd per kolumn innan text trunkeras.
 
+  --select FÄLT[,FÄLT...] eller FÄLT:ALIAS
+      Väljer vilka fält som ska visas i tabellen. Ordningen följer listan.
+      Alias kan anges med syntaxen fält:alias.
+      Exempel:
+        --select name,age
+        --select name:n,age:a,city:ort
+
 EXEMPEL:
   filterjson --file data.json --key name --contains anna
 """
@@ -125,6 +132,13 @@ TABLE FORMAT:
 
   --max-width N
       Maximum column width before truncation.
+
+  --select FIELD[,FIELD...] or FIELD:ALIAS
+      Selects which fields to include in the output table. Order is preserved.
+      Aliases can be assigned using field:alias syntax.
+      Examples:
+        --select name,age
+        --select name:n,age:a,city:loc
 
 EXAMPLES:
   filterjson --file data.json --key name --contains anna

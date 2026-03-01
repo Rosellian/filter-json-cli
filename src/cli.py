@@ -2,6 +2,8 @@ import argparse
 import os
 import json
 import sys
+from argparse import Namespace
+from typing import Any
 
 from argparse_ext import build_filters_from_argv
 from core import filter_data, apply_select
@@ -17,9 +19,9 @@ class Result:
 def run(argv):
     args = parse_args(argv)
 
-    selected_fields = None
-    if args.select:
-        selected_fields = [field.strip() for field in args.select.split(",")]
+    selected_fields = []
+    aliases = {}
+    parse_select(args, selected_fields, aliases)
 
     args._argv = argv
 
@@ -36,8 +38,9 @@ def run(argv):
     filtered = filter_data(data, filters)
 
     filtered = invert_items(filtered, data, args.invert)
+
     if selected_fields:
-        filtered = apply_select(filtered, selected_fields)
+        filtered = apply_select(filtered, selected_fields, aliases)
     filtered = sort_items(filtered, args.sort, args.desc)
 
     if args.json:
@@ -46,6 +49,18 @@ def run(argv):
     set_color_enabled(not args.no_color)
     output = format_table(filtered, max_width=args.max_width, border=args.border)
     return Result(0, output, args)
+
+
+def parse_select(args, selected_fields, aliases):
+    if args.select:
+        for part in args.select.split(","):
+            part = part.strip()
+            if ":" in part:
+                field, alias = part.split(":", 1)
+                selected_fields.append(field.strip())
+                aliases[field.strip()] = alias.strip()
+            else:
+                selected_fields.append(part)
 
 
 def invert_items(filtered, data, invert):
@@ -89,7 +104,7 @@ def parse_args(argv):
     parser.add_argument("--invert", action="store_true",
                         help="Inverterar hela resultatet efter filtrering.")
     parser.add_argument("--select",
-                        help="Comma-separated list of fields to include in the output table.")
+                        help="Comma-separated list of fields to include, optionally with aliases: field:alias.")
     parser.add_argument("--json", action="store_true",
                         help="Skriver ut resultatet som rå JSON istället för tabell.")
     parser.add_argument("--max-width", type=int, default=30,

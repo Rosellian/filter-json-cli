@@ -1,5 +1,6 @@
 import pathlib
 
+from core import apply_select
 from table import format_table, set_color_enabled
 
 SNAPSHOT_DIR = pathlib.Path(__file__).parent / "snapshots"
@@ -48,3 +49,16 @@ def test_table_max_width_snapshot(monkeypatch):
 
     output = format_table(items, border="ascii", max_width=10)
     assert_snapshot("table_max_width.txt", output)
+
+def test_select_with_alias_snapshot():
+    items = [
+        {"name": "Anna", "age": 30},
+        {"name": "Bob", "age": 8},
+    ]
+
+    output = format_table(
+        apply_select(items, ["name", "age"], {"name": "n", "age": "a"}),
+        border="ascii"
+    )
+
+    assert_snapshot("table_select_alias.txt", output)
