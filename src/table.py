@@ -1,3 +1,5 @@
+from typing import Any
+
 ELLIPSIS = "…"
 RIGHT = "right"
 LEFT = "left"
@@ -21,7 +23,7 @@ def color_enabled():
     return _COLOR_ENABLED
 
 class BorderStyle:
-    def __init__(self, h="-", v="|", tl="+", tr="+", bl="+", br="+", jm="+"):
+    def __init__(self, h="-", v="|", tl="+", tr="+", bl="+", br="+", jm="+", jm_top="+", jm_bottom="+"):
         self.h = h
         self.v = v
         self.tl = tl
@@ -29,18 +31,12 @@ class BorderStyle:
         self.bl = bl
         self.br = br
         self.jm = jm
+        self.jm_top = jm_top
+        self.jm_bottom = jm_bottom
 
-ASCII_BORDER = BorderStyle("-", "|", "+", "+", "+", "+", "+")
-UNICODE_BORDER = BorderStyle("─", "│", "┌", "┐", "└", "┘", "┬")
-MARKDOWN_BORDER = BorderStyle(
-    h="-",
-    v="|",
-    tl="",
-    tr="",
-    bl="",
-    br="",
-    jm="|"
-)
+ASCII_BORDER = BorderStyle("-", "|", "+", "+", "+", "+", "+", "+", "+")
+UNICODE_BORDER = BorderStyle("─", "│", "┌", "┐", "└", "┘", "┼", "┬", "┴")
+MARKDOWN_BORDER = BorderStyle("-", "|", "", "", "", "", "|", "|", "|")
 NO_BORDER = None
 
 BORDER_STYLES = {
@@ -129,24 +125,30 @@ class TableRenderer:
             rows.append(row)
         return rows
 
-    def _border_line(self, top=False, bottom=False):
+    def _border_line(self, position: str="mid"):
         if self.border is None:
             return ""
 
         parts = []
         for col in self.columns:
-            parts.append(self.border.h * col.width)
+            parts.append(self.border.h * (col.width + 2))
 
-        if top:
-            return self.border.tl + self.border.jm.join(parts) + self.border.tr
-        if bottom:
-            return self.border.bl + self.border.jm.join(parts) + self.border.br
+        return self._form_border_line(parts, position)
+
+    def _form_border_line(self, parts: list[Any], position: str="mid") -> str:
+        if position == "top":
+            return self.border.tl + self.border.jm_top.join(parts) + self.border.tr
+        if position == "bottom":
+            return self.border.bl + self.border.jm_bottom.join(parts) + self.border.br
+
+        if self.border == UNICODE_BORDER:
+            return self.border.v + self.border.jm.join(parts) + self.border.v
 
         return self.border.jm + self.border.jm.join(parts) + self.border.jm
 
     def _add_vertical_borders(self, line):
         parts = line.split(COLUMN_SEPARATOR)
-        return f"{self.border.v} " + f" {self.border.v} ".join(parts) + f"{self.border.v}"
+        return f"{self.border.v} " + f" {self.border.v} ".join(parts) + f" {self.border.v}"
 
     def render(self):
         if not self.items:
@@ -157,11 +159,11 @@ class TableRenderer:
             rows = self.render_rows()
             return "\n".join([header] + rows)
 
-        top = self._border_line()
+        top = self._border_line("top")
         header = self.render_header()
         mid = self._border_line()
         rows = self.render_rows()
-        bottom = self._border_line()
+        bottom = self._border_line("bottom")
 
         header = self._add_vertical_borders(header)
         rows = [self._add_vertical_borders(r) for r in rows]
